@@ -1,15 +1,23 @@
 package ToolsQA.DemoMavenEclipseProject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import javax.swing.text.html.HTMLDocument;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -62,52 +70,84 @@ class App
 	}
 	
 	
-	
-    public static void main( String[] args )
-    {
-    	
-	    int counter=1;
-	    Scanner input=new Scanner(System.in);
+	public static List<Integer> frequency(String a) throws FileNotFoundException {
+		
+		int counter=1;
 	    List<String> WordList=new ArrayList<String>();  
 	    List<Integer> CounterList=new ArrayList<Integer>(); 
-	    /*String[] connectors=["one","this","what","and","for","very","i","yes","there","is","am","are","was","were","but","as","not","nor",
-	                         "because", "although", "as", "soon" ,"when", "however", "just", "even", "if", "by", "the" ,"while", "in",
-	                          "that","until","once", "during", "therefore", "of","at", "just", "much","rather", "without", "unless", "more", "both", "";
-	    */
+	    List<String> fileWords = new ArrayList<>();
+	    List<Integer> biggest=new ArrayList<Integer>(); 
+	    
+	    String[] words=URLparsing(a).split(" ");
+		
+		File f = new File("C:\\\\Users\\\\fatma\\\\source\\\\repos\\\\DemoMavenEclipseProject\\\\connectors.txt");
+	    Scanner scanner = new Scanner(f);
+	    for(int i=0;scanner.hasNext();i++) {
+	    	fileWords.add(i, scanner.nextLine());
+	    }
+	    for(int i=0;i<words.length;i++) {
+	    	if(!(WordList.contains(words[i]))) {
+	    		for(int j=i+1;j<words.length;j++) {
+	    	    	if(words[i].equals(words[j]) &&  !fileWords.contains(words[i]) ) {
+	    	    		counter++;
+	    	    	}
+	    	    }
+	    		WordList.add(words[i]);
+	        	CounterList.add(counter);
+	        	counter=1;
+	    	}
+	    }
+	    int flag=0;	    
+	    int bigger=CounterList.get(0);
+	    
+	    for(int j=0;j<5;j++) {
+	    	for(int i=1;i<CounterList.size();i++) {
+		    	if(CounterList.get(i)>bigger) {
+		    		bigger=CounterList.get(i);
+		    		flag=i;
+		    		System.out.println("\n"+i);
+		    	}
+		    }
+	    	biggest.add(bigger);
+	    	CounterList.set(flag, 0);
+	    	flag=0;
+	    }
+	    System.out.printf(WordList.get(flag) + " " + CounterList.get(flag));
+	    
+	    return biggest;
+	}
+	
+	
+    public static void main( String[] args ) throws FileNotFoundException
+    {
+    	
+	    Scanner input=new Scanner(System.in);
+	    
 	    System.out.println("Input URL:");
 	    String a=input.nextLine();
-	    String b="ben sen o bu şu";
-	    String[] words=URLparsing(a).split(" ");
-	    //System.out.println("\n kelime sayısı "+words.length);
+	    
+	    System.out.println(frequency(a).get(0));
+	    //    https://en.wikipedia.org/wiki/German_Workers%27_Party
+	    //	  https://en.wikipedia.org/wiki/Adolf_Hitler
 	    
 	    
-	    //https://en.wikipedia.org/wiki/German_Workers%27_Party
-	    //URLparsing(a);
-	    System.out.println("\n "+words[1]);
-	    
-	    for(int i=0;i<words.length;i++) {
-	    	//for(int k=0;k<WordList.size();k++) {
-	    		if(!(WordList.contains(words[i]))) {
-	    			for(int j=i+1;j<words.length;j++) {
-	    	    		if(words[i].equals(words[j]) ) {
-	    	    			counter++;
-	    	    			//words[j]=null;
-	    	    		}
-	    	    	}
-	    			WordList.add(words[i]);
-	        		CounterList.add(counter);
-	        		counter=1;
-	    		}
-	    	//}
-	    	
-	    }
+	    //tüm kelimeleri frekansları ile birlikte yazdırır
+	    /*
 	    for(int i=0;i<CounterList.size();i++) {
-	    	System.out.println(CounterList.get(i));
+	    	System.out.println(CounterList.get(i)+" adet "+WordList.get(i));
 	    }
-	    for(int i=0;i<WordList.size();i++) {
-	    	System.out.println(WordList.get(i));
-	    }
-	    //aa b hj ıo aa jj lo lş aa
+	    */
+	    System.out.println("\n------------------------------------");
+	    
+	    
+	    /*System.out.println("\n 1. ASAMA");
+	    System.out.println(WordList.get(flag) + " " + CounterList.get(flag));*/
     	
+	    //2. ASAMA
+	    /*System.out.println("Input URL:");
+	    String b=input.nextLine();
+	    
+	    frequency(b);*/
+	    
     }
 }
