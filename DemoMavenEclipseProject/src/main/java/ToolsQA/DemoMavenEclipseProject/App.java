@@ -39,7 +39,7 @@ class App
 	        br = new BufferedReader(new InputStreamReader(is));
 
 	        while ((line = br.readLine()) != null) {
-	            //System.out.println(line);
+	            //System.out.println(line); //html kodu yazdırıyor
 	            htmlString +=line;
 	            
 	        }
@@ -51,7 +51,6 @@ class App
 	        try {
 	            if (is != null) is.close();
 	        } catch (IOException ioe) {
-	            // nothing to see here
 	        }
 	    }
     	try {    	
@@ -70,21 +69,27 @@ class App
 	}
 	
 	
-	public static List<Integer> frequency(String a) throws FileNotFoundException {
+	public static List<String> keywords(String a) throws FileNotFoundException {
 		
 		int counter=1;
-	    List<String> WordList=new ArrayList<String>();  
+		List<String> WordList=new ArrayList<String>();  
 	    List<Integer> CounterList=new ArrayList<Integer>(); 
 	    List<String> fileWords = new ArrayList<>();
 	    List<Integer> biggest=new ArrayList<Integer>(); 
+	    List<String> biggestWords=new ArrayList<String>(); 
 	    
-	    String[] words=URLparsing(a).split(" ");
-		
-		File f = new File("C:\\\\Users\\\\fatma\\\\source\\\\repos\\\\DemoMavenEclipseProject\\\\connectors.txt");
+	    String[] words=URLparsing(a).split(" "); //url içerisindeki kelimeleri alıyor
+		/* ,".",",",":",";","_","-","(",")","[","]","{","}","!","'","^","+",
+		"%","&","/","=","?","*","|","<",">" */
+		File f = new File("C:\\\\Users\\\\fatma\\\\source\\\\repos\\\\DemoMavenEclipseProject\\\\connectors.txt"); //ayıklanacak bağlaçlar
 	    Scanner scanner = new Scanner(f);
+	    
+	    //ayıklanacak bağlaçlar dosyadan çekiliyor
 	    for(int i=0;scanner.hasNext();i++) {
 	    	fileWords.add(i, scanner.nextLine());
 	    }
+	    
+	    //frekanslar hesaplanıyor
 	    for(int i=0;i<words.length;i++) {
 	    	if(!(WordList.contains(words[i]))) {
 	    		for(int j=i+1;j<words.length;j++) {
@@ -97,57 +102,90 @@ class App
 	        	counter=1;
 	    	}
 	    }
+	    //frekansı en yüksek 10 kelimeyi buluyor
 	    int flag=0;	    
 	    int bigger=CounterList.get(0);
 	    
-	    for(int j=0;j<5;j++) {
+	    for(int j=0;j<20;j++) {
 	    	for(int i=1;i<CounterList.size();i++) {
 		    	if(CounterList.get(i)>bigger) {
 		    		bigger=CounterList.get(i);
 		    		flag=i;
-		    		System.out.println("\n"+i);
+		    		//System.out.println("\n"+i+" a"+bigger);
 		    	}
 		    }
 	    	biggest.add(bigger);
-	    	CounterList.set(flag, 0);
+	    	biggestWords.add(WordList.get(flag));
+	    	CounterList.remove(flag);
+	    	bigger=CounterList.get(0);
 	    	flag=0;
 	    }
-	    System.out.printf(WordList.get(flag) + " " + CounterList.get(flag));
 	    
-	    return biggest;
+	    //frekansı en yüksek 10 kelimeyi yazdırıyor
+	    for(int i=0;i<biggestWords.size();i++) {
+	    	System.out.println("\nt"+i+" "+biggest.get(i)+" "+biggestWords.get(i));
+	    }
+	    return biggestWords;
 	}
+	
+	
+	
+	
+	
 	
 	
     public static void main( String[] args ) throws FileNotFoundException
     {
-    	
+    	List<String> biggestWords=new ArrayList<String>();
+    	List<String> biggestWords2=new ArrayList<String>();
 	    Scanner input=new Scanner(System.in);
 	    
 	    System.out.println("Input URL:");
 	    String a=input.nextLine();
 	    
-	    System.out.println(frequency(a).get(0));
+	    biggestWords=keywords(a);
+	    
 	    //    https://en.wikipedia.org/wiki/German_Workers%27_Party
 	    //	  https://en.wikipedia.org/wiki/Adolf_Hitler
+	    //frequency
 	    
-	    
-	    //tüm kelimeleri frekansları ile birlikte yazdırır
-	    /*
-	    for(int i=0;i<CounterList.size();i++) {
-	    	System.out.println(CounterList.get(i)+" adet "+WordList.get(i));
-	    }
-	    */
 	    System.out.println("\n------------------------------------");
+	    System.out.println("\n"+a+" için nahtar kelimeler:");
+	    for(int i=0;i<biggestWords.size();i++) {
+	    	System.out.println(" "+biggestWords.get(i));
+	    }
 	    
-	    
-	    /*System.out.println("\n 1. ASAMA");
-	    System.out.println(WordList.get(flag) + " " + CounterList.get(flag));*/
-    	
-	    //2. ASAMA
-	    /*System.out.println("Input URL:");
+	    System.out.println("Input URL:");
 	    String b=input.nextLine();
+	    biggestWords2=keywords(b);
+	    System.out.println("\n"+b+" için nahtar kelimeler:");
+	    for(int i=0;i<biggestWords2.size();i++) {
+	    	System.out.println(" "+biggestWords2.get(i));
+	    }
 	    
-	    frequency(b);*/
-	    
+	    //benzerlik
+	    int flag=0;
+	    for(int i=0;i<biggestWords.size();i++) {
+	    	if(biggestWords2.contains(biggestWords.get(i))) {
+	    		System.out.println("\nbenzer kelime "+biggestWords.get(i));
+	    		flag++;
+	    	}
+	    }
+	    System.out.println(a+" ve "+b+" arasındaki benzerlik oranı %"+(flag*500)/100);
     }
 }
+/*public int similarity(List<Integer> biggest,List<Integer> CounterList) {
+
+int frequency=0;
+int frequencySum=0;
+int sum=0;
+for(int i=0;i<biggest.size();i++) {
+	frequencySum+=biggest.get(i);
+}
+for(int i=0;i<CounterList.size();i++) {
+	sum+=CounterList.get(i);
+}
+frequency=frequencySum/sum;
+return frequency;
+}
+*/
