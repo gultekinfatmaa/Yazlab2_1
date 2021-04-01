@@ -102,12 +102,12 @@ class App
 	        	counter=1;
 	    	}
 	    }
-	    /*
+	    
 	    System.out.println("\n FREKANSLAR\n");
 	    for(int i=0;i<CounterList.size();i++) {
 	    	System.out.println("\nt"+i+" "+WordList.get(i)+" "+CounterList.get(i));
 	    }
-	    */
+	    
 	    
 	    //frekansı en yüksek 20 kelimeyi buluyor
 	    
